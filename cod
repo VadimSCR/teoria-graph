@@ -1,0 +1,64 @@
+#include "pch.h"
+#include <iostream>
+#include <vector>
+
+using namespace std;
+void Dikstra(vector<vector<pair<int, int>>>&, int&);
+int main() {
+	vector<vector<pair<int, int>>> G{
+		{ {1, 10}, {2, 6}, {3,8}},       // 1
+		{ {3, 5}, {4, 13}, {6, 11}},    // 2
+		{ {4, 3}},                     // 3
+		{ {2, 2}, {4, 5}, {5, 7}},    // 4
+		{ {8, 12}, {5, 9}},          // 5
+		{ {7, 8}, {8, 10}},         // 6
+		{ {5, 4}, {7, 6}, {8, 16}},// 7
+	    {{8,15}},                 // 8 
+		{}
+	};
+	setlocale(LC_ALL, "Russian");
+	int vortex;
+	vortex = 0;
+	Dikstra(G, vortex);
+
+	return 0;
+}
+void Dikstra(vector<vector<pair<int, int>>>& myG, int& s) {
+	const int inf = 2000;
+	size_t n = myG.size();
+	vector<size_t> D(n, inf);
+	vector<size_t> P(n);
+	vector<bool> U(n, false);
+	// Исходная вершина 
+	// s = 0;
+	D[s] = 0;
+	for (size_t i = 0; i < n; i++) {
+		// Определяем значение стартовой вершины
+		size_t v = 1000;
+		for (size_t j = 0; j < n; j++)
+			if (!U[j] && (v == 1000 || D[j] < D[v]))
+				v = j;
+		// Выходим, если встретился хоть один inf
+		if (D[v] == inf)
+			break;
+		// Говорим, что посетили вершину
+		U[v] = true;
+		// Определяем итераторы списку
+		auto beg = myG[v].begin();
+		auto lst = myG[v].end();
+		while (beg != lst) {
+			auto to = beg->first;
+			auto len = beg->second;
+			// "релаксация"
+			if (D[v] + len < D[to]) {
+				D[to] = D[v] + len;
+				P[to] = v;
+			}
+			beg++;
+		}
+	}
+	// Выводим список кратчайших маршрутов от исходной вершины до 9
+	for (auto& r : D)
+		cout << r << " ";
+	cout << endl;
+}
